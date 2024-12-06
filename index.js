@@ -28,19 +28,27 @@ async function run() {
 
         const campaignnCollection = client
             .db("campaignDB")
-            .collection("campaign");
+            .collection("campaigns");
         const userCollection = client.db("campaignDB").collection("users");
 
         // Routes for CRUD operations
         // Get all campaigns
-        app.get("/campaign", async (req, res) => {
+        app.get("/campaigns", async (req, res) => {
             const cursor = campaignnCollection.find({});
             const results = await cursor.toArray();
             res.send(results);
         });
 
+        // get a campaign by id
+        app.get("/campaigns/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await campaign.collection.findOne(query);
+            res.send(result);
+        });
+
         // Create a new campaign
-        app.post("/campaign", async (req, res) => {
+        app.post("/campaigns", async (req, res) => {
             const newCampaign = req.body;
             const result = await campaignnCollection.insertOne(newCampaign);
             res.send(result);
