@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const app = express();
 
@@ -43,7 +43,7 @@ async function run() {
         app.get("/campaigns/:id", async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId(id) };
-            const result = await campaign.collection.findOne(query);
+            const result = await campaignnCollection.findOne(query);
             res.send(result);
         });
 
@@ -51,6 +51,15 @@ async function run() {
         app.post("/campaigns", async (req, res) => {
             const newCampaign = req.body;
             const result = await campaignnCollection.insertOne(newCampaign);
+            res.send(result);
+        });
+
+        // user routes
+
+        // Create a new user
+        app.post("/users", async (req, res) => {
+            const newUser = req.body;
+            const result = await userCollection.insertOne(newUser);
             res.send(result);
         });
 
