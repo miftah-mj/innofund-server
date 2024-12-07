@@ -42,11 +42,15 @@ async function run() {
         // Get all running campaigns
         app.get("/running-campaigns", async (req, res) => {
             const currentDate = new Date();
+            const formattedDate = currentDate.toISOString().split("T")[0]; // Convert current date to "YYYY-MM-DD" format
+            console.log(formattedDate);
+
             const cursor = campaignnCollection
                 .find({
-                    deadline: { $gte: currentDate },
+                    deadline: { $gte: formattedDate },
                 })
                 .limit(6);
+
             const campaigns = await cursor.toArray();
             res.json(campaigns);
         });
