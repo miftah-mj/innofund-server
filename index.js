@@ -39,6 +39,18 @@ async function run() {
             res.send(results);
         });
 
+        // Get all running campaigns
+        app.get("/running-campaigns", async (req, res) => {
+            const currentDate = new Date();
+            const cursor = campaignnCollection
+                .find({
+                    deadline: { $gte: currentDate },
+                })
+                .limit(6);
+            const campaigns = await cursor.toArray();
+            res.json(campaigns);
+        });
+
         // get a campaign by id
         app.get("/campaigns/:id", async (req, res) => {
             const id = req.params.id;
