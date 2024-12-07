@@ -59,6 +59,32 @@ async function run() {
             res.send(result);
         });
 
+        // Update a campaign by id
+        app.put("/campaigns/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updatedCampaign = req.body;
+            const campaign = {
+                $set: {
+                    title: updatedCampaign.title,
+                    description: updatedCampaign.description,
+                    image: updatedCampaign.image,
+                    deadline: updatedCampaign.deadline,
+                    goal: updatedCampaign.goal,
+                    collected: updatedCampaign.collected,
+                    category: updatedCampaign.category,
+                    owner: updatedCampaign.owner,
+                },
+            };
+            const result = await campaignnCollection.updateOne(
+                filter,
+                campaign,
+                options
+            );
+            res.send(result);
+        });
+
         // Create a new campaign
         app.post("/campaigns", async (req, res) => {
             const newCampaign = req.body;
