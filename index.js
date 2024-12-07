@@ -55,11 +55,46 @@ async function run() {
         });
 
         // user routes
+        // Get all users
+        app.get("/users", async (req, res) => {
+            const cursor = userCollection.find({});
+            const results = await cursor.toArray();
+            res.send(results);
+        });
+
+        // get a user by id
+        app.get("/users/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) };
+            const result = await userCollection.findOne(query);
+            res.send(result);
+        });
 
         // Create a new user
         app.post("/users", async (req, res) => {
             const newUser = req.body;
             const result = await userCollection.insertOne(newUser);
+            res.send(result);
+        });
+
+        // Update a user by id
+        app.put("/users/:id", async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updatedUser = req.body;
+            const user = {
+                $set: {
+                    name: updatedUser.name,
+                    email: updatedUser.email,
+                    password: updatedUser.password,
+                },
+            };
+            const result = await userCollection.updateOne(
+                filter,
+                user,
+                options
+            );
             res.send(result);
         });
 
