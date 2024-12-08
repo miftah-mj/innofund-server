@@ -43,7 +43,7 @@ async function run() {
         app.get("/running-campaigns", async (req, res) => {
             const currentDate = new Date();
             const formattedDate = currentDate.toISOString().split("T")[0]; // Convert current date to "YYYY-MM-DD" format
-            console.log(formattedDate);
+            // console.log(formattedDate);
 
             const cursor = campaignnCollection
                 .find({
@@ -75,10 +75,10 @@ async function run() {
                     description: updatedCampaign.description,
                     image: updatedCampaign.image,
                     deadline: updatedCampaign.deadline,
-                    goal: updatedCampaign.goal,
-                    collected: updatedCampaign.collected,
                     category: updatedCampaign.category,
-                    owner: updatedCampaign.owner,
+                    minDonation: updatedCampaign.minDonation,
+                    email: updatedCampaign.email,
+                    username: updatedCampaign.username,
                 },
             };
             const result = await campaignnCollection.updateOne(
