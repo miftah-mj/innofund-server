@@ -119,24 +119,16 @@ async function run() {
             res.send(result);
         });
 
-        // Update a user by id
-        app.put("/users/:id", async (req, res) => {
-            const id = req.params.id;
-            const filter = { _id: new ObjectId(id) };
-            const options = { upsert: true };
-            const updatedUser = req.body;
-            const user = {
+        // Update a user by email
+        app.patch("/users/", async (req, res) => {
+            const email = req.body.email;
+            const filter = { email };
+            const updatedUser = {
                 $set: {
-                    name: updatedUser.name,
-                    email: updatedUser.email,
-                    password: updatedUser.password,
+                    lastSigninTime: req.body?.lastSigninTime,
                 },
             };
-            const result = await userCollection.updateOne(
-                filter,
-                user,
-                options
-            );
+            const result = await userCollection.updateOne(filter, updatedUser);
             res.send(result);
         });
 
