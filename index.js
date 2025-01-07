@@ -121,16 +121,31 @@ async function run() {
             res.send(result);
         });
 
-        // Donation endpoint
-        app.post("/donations", async (req, res) => {
-            try {
-                const donation = req.body;
-                const result = await donationsCollection.insertOne(donation);
-                res.status(201).json({ insertedId: result.insertedId });
-            } catch (error) {
-                console.error("Error saving donation:", error);
-                res.status(500).json({ error: "Failed to save donation" });
+        /**
+         *
+         * Donation endpoint
+         *
+         */
+
+        // Get all donations, optionally filtered by email
+        app.get("/donations", async (req, res) => {
+            const email = req.query.email;
+            let query = {};
+
+            if (email) {
+                query = { donorEmail: email };
             }
+
+            const cursor = donationsCollection.find(query);
+            const donations = await cursor.toArray();
+            res.json(donations);
+        });
+
+        // Create Donation
+        app.post("/donations", async (req, res) => {
+            const newDonation = req.body;
+            const result = await donationsCollection.insertOne(newDonation);
+            res.send(result);
         });
 
         // user routes
