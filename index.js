@@ -30,9 +30,16 @@ async function run() {
             .db("campaignDB")
             .collection("campaigns");
         const userCollection = client.db("campaignDB").collection("users");
+        const donationsCollection = client
+            .db("campaignDB")
+            .collection("donations");
 
-        // Routes for CRUD operations
-        // Get all campaigns
+        /**
+         *
+         * Routes for CRUD operations
+         *
+         */
+        // Get all campaigns, optionally filtered by email and sorted by minDonation.
         app.get("/campaigns", async (req, res) => {
             const email = req.query.email;
             let query = {};
@@ -40,8 +47,11 @@ async function run() {
             if (email) {
                 query = { email: email };
             }
+            const sortOrder = req.query.sort === "asc" ? 1 : -1; // Default to descending order if not specified
 
-            const cursor = campaignnCollection.find(query);
+            const cursor = campaignnCollection
+                .find(query)
+                .sort({ minDonation: sortOrder });
             const results = await cursor.toArray();
             res.send(results);
         });
@@ -71,7 +81,7 @@ async function run() {
         });
 
         // Update a campaign by id
-        app.put("/campaigns/:id", async (req, res) => {
+        app.patch("/campaigns/:id", async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
             const options = { upsert: true };
@@ -109,6 +119,18 @@ async function run() {
             const newCampaign = req.body;
             const result = await campaignnCollection.insertOne(newCampaign);
             res.send(result);
+        });
+
+        // Donation endpoint
+        app.post("/donations", async (req, res) => {
+            try {
+                const donation = req.body;
+                const result = await donationsCollection.insertOne(donation);
+                res.status(201).json({ insertedId: result.insertedId });
+            } catch (error) {
+                console.error("Error saving donation:", error);
+                res.status(500).json({ error: "Failed to save donation" });
+            }
         });
 
         // user routes
